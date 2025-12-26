@@ -1,499 +1,366 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Змінено viewport, щоб заборонити масштабування -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Запрет масштабирования и оптимизация касаний -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Brainrot Items Generator - Holiday Edition</title>
     
-    <!-- Підключення Tailwind CSS для стилізації -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Підключення шрифту Inter з Google Fonts -->
+    <!-- Шрифты -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     
-    <!-- Підключення 'canvas-confetti' для анімації -->
+    <!-- Конфетти -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* Встановлюємо основний шрифт для всього документа */
+        /* Оптимизация производительности и запрет зума */
+        * {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(-45deg, #1a365d, #2d3748, #1a202c, #2c5282);
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #0f172a, #1e1b4b);
             background-size: 400% 400%;
             animation: gradient-animation 15s ease infinite;
             overflow-x: hidden;
             position: relative;
+            min-height: 100vh;
         }
 
-        /* Анімація для градієнта фону */
         @keyframes gradient-animation {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* Фон-зображення для сторінки */
         body::before {
             content: '';
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             background-image: url('https://i.ytimg.com/vi/C2kErvkXsC4/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAXvguaVXHq2I3KmJQmXZFD6jazTQ');
             background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
+            background-position: center;
             z-index: -2;
+            will-change: transform;
         }
 
-        /* Напівпрозорий оверлей з легким синім відтінком для зими */
         body::after {
             content: '';
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(10, 20, 40, 0.85);
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 15, 30, 0.85);
             z-index: -1;
         }
 
-        /* Анімація снігу */
+        /* Снежинки */
         .snowflake {
             color: #fff;
-            font-size: 1.5em;
-            font-family: Arial, sans-serif;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 1);
+            font-size: 1.2em;
             position: fixed;
             top: -10%;
             z-index: 5;
-            user-select: none;
-            cursor: default;
-            animation-name: snowflakes-fall, snowflakes-shake;
-            animation-duration: 10s, 3s;
-            animation-timing-function: linear, ease-in-out;
-            animation-iteration-count: infinite, infinite;
-            animation-play-state: running, running;
+            pointer-events: none;
+            animation: snowflakes-fall 10s linear infinite, snowflakes-shake 3s ease-in-out infinite;
+            will-change: top, transform;
         }
 
         @keyframes snowflakes-fall {
             0% { top: -10%; }
-            100% { top: 100%; }
+            100% { top: 110%; }
         }
 
         @keyframes snowflakes-shake {
             0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(80px); }
+            50% { transform: translateX(50px); }
         }
 
-        /* Гірлянда */
+        /* Гирлянда */
         .garland {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 60px;
+            height: 50px;
             z-index: 30;
             pointer-events: none;
             display: flex;
             justify-content: space-around;
-            padding: 0 10px;
         }
 
         .light {
-            width: 16px;
-            height: 24px;
+            width: 12px;
+            height: 18px;
             border-radius: 50%;
-            animation: flash 1.5s infinite;
+            animation: flash 1.2s infinite;
         }
 
-        .light:nth-child(4n+1) { background: #ff0000; box-shadow: 0 0 20px #ff0000; animation-delay: 0.1s; }
-        .light:nth-child(4n+2) { background: #00ff00; box-shadow: 0 0 20px #00ff00; animation-delay: 0.5s; }
-        .light:nth-child(4n+3) { background: #ffff00; box-shadow: 0 0 20px #ffff00; animation-delay: 0.9s; }
-        .light:nth-child(4n+4) { background: #0000ff; box-shadow: 0 0 20px #0000ff; animation-delay: 1.3s; }
+        .light:nth-child(4n+1) { background: #ff4d4d; box-shadow: 0 0 15px #ff4d4d; animation-delay: 0.1s; }
+        .light:nth-child(4n+2) { background: #4dff4d; box-shadow: 0 0 15px #4dff4d; animation-delay: 0.4s; }
+        .light:nth-child(4n+3) { background: #ffff4d; box-shadow: 0 0 15px #ffff4d; animation-delay: 0.7s; }
+        .light:nth-child(4n+4) { background: #4d4dff; box-shadow: 0 0 15px #4d4dff; animation-delay: 1s; }
 
         @keyframes flash {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
         }
 
-        /* Стилі для генератора */
-        .glow-panel {
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.5), inset 0 0 10px rgba(34, 197, 94, 0.4);
-            border: 2px solid rgba(34, 197, 94, 0.6);
+        /* Карточки */
+        .fruit-card {
+            transition: transform 0.2s cubic-bezier(0.17, 0.67, 0.83, 0.67), box-shadow 0.2s ease, border-color 0.2s ease;
+            will-change: transform, box-shadow;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .fruit-card:active {
+            transform: scale(0.96);
         }
 
         .fruit-card.selected {
-            border-color: #f59e0b;
-            transform: scale(1.03);
-            background: rgba(0, 0, 0, 0.5);
+            border-color: #fbbf24;
+            background: rgba(0, 0, 0, 0.6);
         }
 
-        /* Специфічні тіні для вибраних карток */
-        .fruit-card[data-fruit="La Spooky Grande"].selected { box-shadow: 0 0 25px rgba(34, 211, 238, 0.7); }
-        .fruit-card[data-fruit="Spooky and Pumpky"].selected { box-shadow: 0 0 25px rgba(239, 68, 68, 0.7); }
-        .fruit-card[data-fruit="Vampira Cappucina"].selected { box-shadow: 0 0 25px rgba(244, 114, 182, 0.7); }
-        .fruit-card[data-fruit="Zombie Tralala"].selected { box-shadow: 0 0 25px rgba(250, 204, 21, 0.7); }
-        .fruit-card[data-fruit="Frankentteo"].selected { box-shadow: 0 0 25px rgba(168, 85, 247, 0.7); }
-        .fruit-card[data-fruit="La Vacca Jacko Lanterino"].selected { box-shadow: 0 0 25px rgba(245, 158, 11, 0.7); }
-        .fruit-card[data-fruit="Eviledon"].selected { box-shadow: 0 0 25px rgba(56, 189, 248, 0.7); }
-        .fruit-card[data-fruit="Vulturino Skeletono"].selected { box-shadow: 0 0 25px rgba(253, 224, 71, 0.7); }
-        .fruit-card[data-fruit="Los Mobilis"].selected { box-shadow: 0 0 25px rgba(249, 115, 22, 0.7); }
-        .fruit-card[data-fruit="Mieteteira Bicicleteira"].selected { box-shadow: 0 0 25px rgba(185, 28, 28, 0.7); }
-        .fruit-card[data-fruit="Cannelloni with Dragon"].selected { box-shadow: 0 0 25px rgba(132, 204, 22, 0.7); }
-        .fruit-card[data-fruit="Strawberry Elephant"].selected { box-shadow: 0 0 25px rgba(244, 114, 182, 0.7); }
-        .fruit-card[data-fruit="Los Spyderinis"].selected { box-shadow: 0 0 25px rgba(96, 165, 250, 0.7); }
-        .fruit-card[data-fruit="Rebirth"].selected { box-shadow: 0 0 30px rgba(255, 255, 255, 0.9); }
+        /* Тени для выбранных предметов */
+        .fruit-card[data-fruit="Rebirth"].selected { box-shadow: 0 0 30px rgba(255, 255, 255, 0.7); }
+        .fruit-card[data-fruit="Los Spyderinis"].selected { box-shadow: 0 0 25px rgba(59, 130, 246, 0.6); }
+        .fruit-card[data-fruit="Strawberry Elephant"].selected { box-shadow: 0 0 25px rgba(236, 72, 153, 0.6); }
+        .fruit-card[data-fruit="Cannelloni with Dragon"].selected { box-shadow: 0 0 25px rgba(132, 204, 22, 0.6); }
 
         .neon-text {
-            text-shadow:
-                0 0 10px rgba(187, 247, 208, 0.8),
-                0 0 20px rgba(74, 222, 128, 0.6),
-                0 0 40px rgba(34, 197, 94, 0.5);
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.8), 0 0 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .flying-img {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            /* Замедленная анимация: 1.5 секунды */
+            transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+            border-radius: 50%;
+        }
+
+        @keyframes jiggle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .jiggle { animation: jiggle 0.3s ease-out; }
+
+        /* Одинаковый размер контейнеров изображений */
+        .card-img-container {
+            width: 100%;
+            height: 60%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
         }
 
         .modal { display: none; }
         .modal.visible { display: flex; }
-
-        .quantity-btn, .claim-btn { -webkit-tap-highlight-color: transparent; }
-        .lime-glow { box-shadow: 0 0 12px rgba(163, 230, 53, 0.6), inset 0 0 5px rgba(163, 230, 53, 0.45); }
-
-        /* Анімація "польоту" іконки */
-        .flying-img {
-            transition: left 0.8s cubic-bezier(0.3, 0, 0.8, 0.7),
-                        top 0.8s cubic-bezier(0.3, 0, 0.8, 0.7),
-                        transform 0.8s cubic-bezier(0.3, 0, 0.8, 0.7),
-                        opacity 0.8s ease-in-out;
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        @keyframes jiggle {
-            0%, 100% { transform: scale(1) rotate(0); }
-            25% { transform: scale(1.1) rotate(-3deg); }
-            75% { transform: scale(1.1) rotate(3deg); }
-        }
-        .jiggle { animation: jiggle 0.3s ease-in-out; }
     </style>
 </head>
 <body class="text-white antialiased">
 
-    <!-- Новорічна гірлянда -->
+    <!-- Гирлянда -->
     <div class="garland">
-        <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
-        <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
-        <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
-        <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
-        <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
+        <script>
+            for(let i=0; i<20; i++) document.write('<div class="light"></div>');
+        </script>
     </div>
 
-    <!-- Контейнер для сніжинок -->
+    <!-- Контейнер для снега -->
     <div id="snowContainer"></div>
 
     <div class="relative w-full min-h-screen flex flex-col">
-            
-            <!-- Основний контент генератора -->
-            <div class="flex-grow relative z-10">
-                <div class="container mx-auto px-4 py-12 pb-40 flex flex-col items-center justify-center min-h-screen">
-                    <div class="bg-black/40 backdrop-blur-sm rounded-2xl py-4 px-10 mb-6 border-2 border-green-500/50 glow-panel text-center">
-                        <p class="text-sm text-green-400 font-bold mb-2 uppercase tracking-widest">🎄 Holiday Brainrot Edition 🎄</p>
-                        <h2 class="text-3xl sm:text-4xl font-black text-white uppercase tracking-tighter">STEAL A BRAINROT</h2>
+        <div class="flex-grow relative z-10">
+            <div class="container mx-auto px-4 py-12 pb-48 flex flex-col items-center">
+                
+                <div class="bg-black/50 backdrop-blur-md rounded-2xl py-4 px-10 mb-8 border-2 border-green-500/50 text-center">
+                    <p class="text-sm text-green-400 font-bold mb-1 uppercase tracking-widest">🎄 Holiday Brainrot Edition 🎄</p>
+                    <h2 class="text-3xl sm:text-4xl font-black text-white uppercase tracking-tighter">STEAL A BRAINROT</h2>
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl font-black mb-12 text-center text-green-500 uppercase tracking-widest neon-text">ITEMS GENERATOR</h1>
+
+                <!-- Сетка предметов -->
+                <div id="fruitGrid" class="grid grid-cols-2 gap-6 md:gap-8 max-w-4xl w-full">
+                    
+                    <!-- 1. Rebirth -->
+                    <div class="fruit-card bg-black/40 backdrop-blur-md rounded-2xl p-6 border-2 border-white/10 aspect-square cursor-pointer" data-fruit="Rebirth">
+                        <div class="card-img-container">
+                            <img src="https://i.ibb.co/cSPKf7QG/Chat-GPT-Image-26-2025-14-52-08.jpg" alt="Rebirth" class="max-h-full max-w-full object-contain drop-shadow-2xl rounded-full" loading="lazy">
+                        </div>
+                        <p class="font-bold text-center text-lg sm:text-xl uppercase tracking-tight py-2">Rebirth</p>
+                        <div class="w-full flex flex-col items-center gap-3">
+                            <div class="quantity-selector hidden flex items-center justify-center gap-4">
+                                <button class="quantity-btn minus-btn bg-red-600/60 rounded-lg w-10 h-10 font-bold">-</button>
+                                <span class="quantity-value text-2xl font-black w-8 text-center">1</span>
+                                <button class="quantity-btn plus-btn bg-green-600/60 rounded-lg w-10 h-10 font-bold">+</button>
+                            </div>
+                            <button class="claim-btn w-full text-lime-400 font-black py-3 rounded-xl border-2 border-lime-400/50 bg-lime-500/10 uppercase transition-colors">Collect</button>
+                        </div>
                     </div>
 
-                    <h1 class="text-3xl sm:text-4xl font-black mb-12 text-center text-green-500 uppercase tracking-widest neon-text">ITEMS GENERATOR</h1>
-
-                    <!-- Сітка з предметами (Збільшена ширина: max-w-4xl) -->
-                    <div id="fruitGrid" class="grid grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto w-full">
-                        
-                        <!-- 1. Rebirth (Тепер зверху) -->
-                        <div class="fruit-card bg-black/40 backdrop-blur-md rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300 hover:border-white/30" data-fruit="Rebirth">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://i.ibb.co/cSPKf7QG/Chat-GPT-Image-26-2025-14-52-08.jpg" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Rebirth" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl rounded-full">
-                                <p class="font-bold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl uppercase tracking-tight">Rebirth</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-3">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-lg w-10 h-10 flex items-center justify-center text-xl font-bold hover:bg-red-500/60 transition" type="button">-</button>
-                                    <span class="quantity-value text-2xl font-black w-8 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-lg w-10 h-10 flex items-center justify-center text-xl font-bold hover:bg-green-500/60 transition" type="button">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-black py-3 px-10 rounded-xl text-lg border-2 border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow uppercase" type="button">Collect</button>
-                            </div>
+                    <!-- 2. Los Spyderinis -->
+                    <div class="fruit-card bg-black/40 backdrop-blur-md rounded-2xl p-6 border-2 border-white/10 aspect-square cursor-pointer" data-fruit="Los Spyderinis">
+                        <div class="card-img-container">
+                            <img src="https://cdn.salla.sa/cdn-cgi/image/fit=scale-down,width=450,height=450,onerror=redirect,format=webp/jDznl/ffe45f6d-30a2-47f0-aec2-49b9d1d94116-1000x1000-Lp6lkpqNlGfBm6boa894ifaRYVzw4C4GmSUZ69Mv.png" alt="Los Spyderinis" class="max-h-full max-w-full object-contain drop-shadow-2xl" loading="lazy">
                         </div>
-
-                        <!-- 2. Los Spyderinis -->
-                        <div class="fruit-card bg-black/40 backdrop-blur-md rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300 hover:border-white/30" data-fruit="Los Spyderinis">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://cdn.salla.sa/cdn-cgi/image/fit=scale-down,width=450,height=450,onerror=redirect,format=webp/jDznl/ffe45f6d-30a2-47f0-aec2-49b9d1d94116-1000x1000-Lp6lkpqNlGfBm6boa894ifaRYVzw4C4GmSUZ69Mv.png" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Los Spyderinis" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl">
-                                <p class="font-bold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl uppercase tracking-tight">Los Spyderinis</p>
+                        <p class="font-bold text-center text-lg sm:text-xl uppercase tracking-tight py-2">Los Spyderinis</p>
+                        <div class="w-full flex flex-col items-center gap-3">
+                            <div class="quantity-selector hidden flex items-center justify-center gap-4">
+                                <button class="quantity-btn minus-btn bg-red-600/60 rounded-lg w-10 h-10 font-bold">-</button>
+                                <span class="quantity-value text-2xl font-black w-8 text-center">1</span>
+                                <button class="quantity-btn plus-btn bg-green-600/60 rounded-lg w-10 h-10 font-bold">+</button>
                             </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-3">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-lg w-10 h-10 flex items-center justify-center text-xl font-bold hover:bg-red-500/60 transition" type="button">-</button>
-                                    <span class="quantity-value text-2xl font-black w-8 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-lg w-10 h-10 flex items-center justify-center text-xl font-bold hover:bg-green-500/60 transition" type="button">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-black py-3 px-10 rounded-xl text-lg border-2 border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow uppercase" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <!-- 3. Strawberry Elephant -->
-                        <div class="fruit-card bg-black/40 backdrop-blur-md rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300 hover:border-white/30" data-fruit="Strawberry Elephant">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://tr.rbxcdn.com/180DAY-d51e304283960ef3ab603c45023b98d5/420/420/Hat/Webp/noFilter" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Strawberry Elephant" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl">
-                                <p class="font-bold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl uppercase tracking-tight">Strawberry Elephant</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-3">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-lg w-10 h-10 flex items-center justify-center text-xl font-bold hover:bg-red-500/60 transition" type="button">-</button>
-                                    <span class="quantity-value text-2xl font-black w-8 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-lg w-10 h-10 flex items-center justify-center text-xl font-bold hover:bg-green-500/60 transition" type="button">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-black py-3 px-10 rounded-xl text-lg border-2 border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow uppercase" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <!-- 4. Cannelloni with Dragon -->
-                        <div class="fruit-card bg-black/40 backdrop-blur-md rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300 hover:border-white/30" data-fruit="Cannelloni with Dragon">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://cdn.shopify.com/s/files/1/0837/8712/0919/files/ChatGPT_Image_Aug_8__2025__06_55_02_PM-removebg-preview_600x600.png.webp?v=1754675721" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Cannelloni with Dragon" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl">
-                                <p class="font-bold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl uppercase tracking-tight">Cannelloni with Dragon</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-3">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-lg w-10 h-10 flex items-center justify-center text-xl font-bold hover:bg-red-500/60 transition" type="button">-</button>
-                                    <span class="quantity-value text-2xl font-black w-8 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-lg w-10 h-10 flex items-center justify-center text-xl font-bold hover:bg-green-500/60 transition" type="button">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-black py-3 px-10 rounded-xl text-lg border-2 border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow uppercase" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <!-- Решта предметів -->
-                        <div class="fruit-card bg-black/30 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300" data-fruit="La Spooky Grande">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://i.ibb.co/q3q61QfJ/IMG-1363.webp" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="La Spooky Grande" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-lg">
-                                <p class="font-semibold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl tracking-tight">La Spooky Grande</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-2">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">-</button>
-                                    <span class="quantity-value text-xl font-bold w-6 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-bold py-2 px-8 rounded-lg text-sm border border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <div class="fruit-card bg-black/30 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300" data-fruit="Spooky and Pumpky">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://i.ibb.co/5WZycTrn/IMG-1364.webp" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Spooky and Pumpky" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-lg">
-                                <p class="font-semibold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl tracking-tight">Spooky and Pumpky</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-2">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">-</button>
-                                    <span class="quantity-value text-xl font-bold w-6 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-bold py-2 px-8 rounded-lg text-sm border border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <div class="fruit-card bg-black/30 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300" data-fruit="Vampira Cappucina">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://i.ibb.co/1pNYNZw/IMG-1365.webp" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Vampira Cappucina" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-lg">
-                                <p class="font-semibold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl tracking-tight">Vampira Cappucina</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-2">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">-</button>
-                                    <span class="quantity-value text-xl font-bold w-6 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-bold py-2 px-8 rounded-lg text-sm border border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <div class="fruit-card bg-black/30 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300" data-fruit="Zombie Tralala">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://i.ibb.co/N6C5GmrH/IMG-1366.webp" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Zombie Tralala" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-lg">
-                                <p class="font-semibold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl tracking-tight">Zombie Tralala</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-2">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">-</button>
-                                    <span class="quantity-value text-xl font-bold w-6 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-bold py-2 px-8 rounded-lg text-sm border border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <div class="fruit-card bg-black/30 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300" data-fruit="Frankentteo">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://i.ibb.co/cz1r6bD/IMG-1367.webp" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Frankentteo" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-lg">
-                                <p class="font-semibold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl tracking-tight">Frankentteo</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-2">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">-</button>
-                                    <span class="quantity-value text-xl font-bold w-6 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-bold py-2 px-8 rounded-lg text-sm border border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <div class="fruit-card bg-black/30 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300" data-fruit="La Vacca Jacko Lanterino">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://i.ibb.co/mVVv7nkt/IMG-1368.webp" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="La Vacca Jacko Lanterino" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-lg">
-                                <p class="font-semibold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl tracking-tight">La Vacca Jacko Lanterino</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-2">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">-</button>
-                                    <span class="quantity-value text-xl font-bold w-6 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-bold py-2 px-8 rounded-lg text-sm border border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <div class="fruit-card bg-black/30 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300" data-fruit="Eviledon">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://i.ibb.co/hxBxz12f/IMG-1369.webp" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Eviledon" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-lg">
-                                <p class="font-semibold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl tracking-tight">Eviledon</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-2">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">-</button>
-                                    <span class="quantity-value text-xl font-bold w-6 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-bold py-2 px-8 rounded-lg text-sm border border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <div class="fruit-card bg-black/30 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300" data-fruit="Vulturino Skeletono">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://i.ibb.co/h1sC72dv/IMG-1370.webp" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Vulturino Skeletono" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-lg">
-                                <p class="font-semibold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl tracking-tight">Vulturino Skeletono</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-2">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">-</button>
-                                    <span class="quantity-value text-xl font-bold w-6 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-bold py-2 px-8 rounded-lg text-sm border border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <div class="fruit-card bg-black/30 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300" data-fruit="Los Mobilis">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://i.ibb.co/x8mSSK0T/IMG-1371.webp" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Los Mobilis" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-lg">
-                                <p class="font-semibold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl tracking-tight">Los Mobilis</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-2">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">-</button>
-                                    <span class="quantity-value text-xl font-bold w-6 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-bold py-2 px-8 rounded-lg text-sm border border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow" type="button">Collect</button>
-                            </div>
-                        </div>
-
-                        <div class="fruit-card bg-black/30 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center justify-between aspect-square cursor-pointer border-2 border-white/10 transition-all duration-300" data-fruit="Mieteteira Bicicleteira">
-                            <div class="flex flex-col items-center text-center">
-                                <img src="https://i.ibb.co/G4zfZDrq/IMG-1372.webp" onerror="this.onerror=null;this.src='https://placehold.co/120x120/1f2937/FFFFFF?text=Error';" alt="Mieteteira Bicicleteira" class="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-lg">
-                                <p class="font-semibold mt-4 h-14 flex items-center justify-center text-lg sm:text-xl tracking-tight">Mieteteira Bicicleteira</p>
-                            </div>
-                            <div class="w-full mt-4 flex flex-col items-center space-y-3">
-                                <div class="quantity-selector hidden flex items-center justify-center space-x-2">
-                                    <button class="quantity-btn minus-btn bg-red-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">-</button>
-                                    <span class="quantity-value text-xl font-bold w-6 text-center">1</span>
-                                    <button class="quantity-btn plus-btn bg-green-600/60 rounded-md w-8 h-8 flex items-center justify-center font-bold">+</button>
-                                </div>
-                                <button class="claim-btn text-lime-400 font-bold py-2 px-8 rounded-lg text-sm border border-lime-400/50 bg-lime-500/10 hover:bg-lime-500/20 transition-all duration-300 lime-glow" type="button">Collect</button>
-                            </div>
+                            <button class="claim-btn w-full text-lime-400 font-black py-3 rounded-xl border-2 border-lime-400/50 bg-lime-500/10 uppercase">Collect</button>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Нижня кнопка "Continue" (Збільшена) -->
-            <div id="continueSection" class="fixed bottom-0 left-0 right-0 p-6 bg-gray-900/80 backdrop-blur-md border-t border-white/20 z-20">
-                <div class="max-w-md mx-auto">
-                    <button id="continueButton" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-5 px-8 rounded-2xl transition-all duration-200 transform hover:scale-105 shadow-2xl shadow-red-500/50 flex items-center justify-center text-xl uppercase tracking-widest" type="button">
-                        <span>Continue</span>
-                        <div class="relative ml-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707l-2.414-2.414A1 1 0 006.586 13H4" />
-                            </svg>
-                            <span id="cartCount" class="absolute -top-3 -right-4 bg-white text-red-700 text-sm rounded-full h-7 w-7 flex items-center justify-center font-black border-2 border-red-700">0</span>
+                    <!-- 3. Strawberry Elephant -->
+                    <div class="fruit-card bg-black/40 backdrop-blur-md rounded-2xl p-6 border-2 border-white/10 aspect-square cursor-pointer" data-fruit="Strawberry Elephant">
+                        <div class="card-img-container">
+                            <img src="https://tr.rbxcdn.com/180DAY-d51e304283960ef3ab603c45023b98d5/420/420/Hat/Webp/noFilter" alt="Strawberry Elephant" class="max-h-full max-w-full object-contain drop-shadow-2xl" loading="lazy">
                         </div>
-                    </button>
+                        <p class="font-bold text-center text-lg sm:text-xl uppercase tracking-tight py-2">Strawberry Elephant</p>
+                        <div class="w-full flex flex-col items-center gap-3">
+                            <div class="quantity-selector hidden flex items-center justify-center gap-4">
+                                <button class="quantity-btn minus-btn bg-red-600/60 rounded-lg w-10 h-10 font-bold">-</button>
+                                <span class="quantity-value text-2xl font-black w-8 text-center">1</span>
+                                <button class="quantity-btn plus-btn bg-green-600/60 rounded-lg w-10 h-10 font-bold">+</button>
+                            </div>
+                            <button class="claim-btn w-full text-lime-400 font-black py-3 rounded-xl border-2 border-lime-400/50 bg-lime-500/10 uppercase">Collect</button>
+                        </div>
+                    </div>
+
+                    <!-- 4. Cannelloni with Dragon -->
+                    <div class="fruit-card bg-black/40 backdrop-blur-md rounded-2xl p-6 border-2 border-white/10 aspect-square cursor-pointer" data-fruit="Cannelloni with Dragon">
+                        <div class="card-img-container">
+                            <img src="https://cdn.shopify.com/s/files/1/0837/8712/0919/files/ChatGPT_Image_Aug_8__2025__06_55_02_PM-removebg-preview_600x600.png.webp?v=1754675721" alt="Dragon" class="max-h-full max-w-full object-contain drop-shadow-2xl" loading="lazy">
+                        </div>
+                        <p class="font-bold text-center text-lg sm:text-xl uppercase tracking-tight py-2">Cannelloni with Dragon</p>
+                        <div class="w-full flex flex-col items-center gap-3">
+                            <div class="quantity-selector hidden flex items-center justify-center gap-4">
+                                <button class="quantity-btn minus-btn bg-red-600/60 rounded-lg w-10 h-10 font-bold">-</button>
+                                <span class="quantity-value text-2xl font-black w-8 text-center">1</span>
+                                <button class="quantity-btn plus-btn bg-green-600/60 rounded-lg w-10 h-10 font-bold">+</button>
+                            </div>
+                            <button class="claim-btn w-full text-lime-400 font-black py-3 rounded-xl border-2 border-lime-400/50 bg-lime-500/10 uppercase">Collect</button>
+                        </div>
+                    </div>
+
+                    <!-- Остальные предметы через цикл -->
+                    <script>
+                        const items = [
+                            { name: "La Spooky Grande", img: "https://i.ibb.co/q3q61QfJ/IMG-1363.webp" },
+                            { name: "Spooky and Pumpky", img: "https://i.ibb.co/5WZycTrn/IMG-1364.webp" },
+                            { name: "Vampira Cappucina", img: "https://i.ibb.co/1pNYNZw/IMG-1365.webp" },
+                            { name: "Zombie Tralala", img: "https://i.ibb.co/N6C5GmrH/IMG-1366.webp" },
+                            { name: "Frankentteo", img: "https://i.ibb.co/cz1r6bD/IMG-1367.webp" },
+                            { name: "La Vacca Jacko Lanterino", img: "https://i.ibb.co/mVVv7nkt/IMG-1368.webp" },
+                            { name: "Eviledon", img: "https://i.ibb.co/hxBxz12f/IMG-1369.webp" },
+                            { name: "Vulturino Skeletono", img: "https://i.ibb.co/h1sC72dv/IMG-1370.webp" },
+                            { name: "Los Mobilis", img: "https://i.ibb.co/x8mSSK0T/IMG-1371.webp" },
+                            { name: "Mieteteira Bicicleteira", img: "https://i.ibb.co/G4zfZDrq/IMG-1372.webp" }
+                        ];
+
+                        items.forEach(item => {
+                            document.write(`
+                                <div class="fruit-card bg-black/30 backdrop-blur-sm rounded-2xl p-6 border-2 border-white/10 aspect-square cursor-pointer" data-fruit="${item.name}">
+                                    <div class="card-img-container">
+                                        <img src="${item.img}" alt="${item.name}" class="max-h-full max-w-full object-contain drop-shadow-lg" loading="lazy">
+                                    </div>
+                                    <p class="font-semibold text-center text-lg sm:text-xl tracking-tight py-2">${item.name}</p>
+                                    <div class="w-full flex flex-col items-center gap-3">
+                                        <div class="quantity-selector hidden flex items-center justify-center gap-4">
+                                            <button class="quantity-btn minus-btn bg-red-600/60 rounded-md w-8 h-8 font-bold">-</button>
+                                            <span class="quantity-value text-xl font-bold w-6 text-center">1</span>
+                                            <button class="quantity-btn plus-btn bg-green-600/60 rounded-md w-8 h-8 font-bold">+</button>
+                                        </div>
+                                        <button class="claim-btn w-full text-lime-400 font-bold py-2 rounded-lg border border-lime-400/50 bg-lime-500/10">Collect</button>
+                                    </div>
+                                </div>
+                            `);
+                        });
+                    </script>
                 </div>
             </div>
+        </div>
 
-    </div>
-
-    <!-- Модальні вікна -->
-    <div id="nicknameModal" class="modal fixed inset-0 bg-black/80 items-center justify-center z-40 backdrop-blur-md p-6">
-        <div class="w-full max-w-lg mx-auto text-center">
-            <div class="bg-gray-800/90 backdrop-blur-md rounded-3xl p-10 border-4 border-red-500 shadow-2xl shadow-red-500/50 relative">
-                <button id="closeNicknameModal" class="absolute top-4 right-6 text-gray-400 hover:text-white transition-colors text-5xl leading-none" type="button" aria-label="Close nickname modal">&times;</button>
-                <h2 class="text-4xl font-black mb-6 text-red-500 uppercase tracking-tighter">Holiday Spirit!</h2>
-                <p class="text-gray-200 text-lg mb-6">Who are you, lucky stealer?</p>
-                <div id="selectedItemsContainer" class="flex flex-wrap justify-center gap-4 mb-8 min-h-[80px]"></div>
-                <input id="nicknameInput" type="text" placeholder="Your Epic Nickname" class="w-full bg-gray-700/80 border-2 border-gray-600 rounded-2xl px-6 py-4 text-center text-xl text-white placeholder-gray-500 focus:ring-4 focus:ring-red-500 focus:outline-none transition-all">
-                <button id="generateButton" class="mt-8 w-full bg-green-600 hover:bg-green-700 text-white font-black py-5 px-10 rounded-2xl transition-transform duration-200 transform hover:scale-105 shadow-xl shadow-green-500/40 text-2xl uppercase tracking-widest" type="button">
-                    Generate Gifts
+        <!-- Кнопка Continue -->
+        <div id="continueSection" class="fixed bottom-0 left-0 right-0 p-6 bg-gray-900/90 backdrop-blur-md border-t border-white/20 z-20">
+            <div class="max-w-md mx-auto">
+                <button id="continueButton" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-5 px-8 rounded-2xl shadow-2xl flex items-center justify-center text-xl uppercase tracking-widest transition-all">
+                    <span>Continue</span>
+                    <div class="relative ml-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707l-2.414-2.414A1 1 0 006.586 13H4" />
+                        </svg>
+                        <span id="cartCount" class="absolute -top-3 -right-4 bg-white text-red-700 text-sm rounded-full h-7 w-7 flex items-center justify-center font-black border-2 border-red-700">0</span>
+                    </div>
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="loadingModal" class="modal fixed inset-0 bg-black/90 items-center justify-center z-50">
-        <div class="flex flex-col items-center justify-center text-white">
-            <svg class="animate-spin h-20 w-20 text-red-500 mb-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
+    <!-- Модальное окно Никнейма -->
+    <div id="nicknameModal" class="modal fixed inset-0 bg-black/80 items-center justify-center z-40 backdrop-blur-md p-6">
+        <div class="w-full max-w-lg text-center">
+            <div class="bg-gray-800/90 rounded-3xl p-10 border-4 border-red-500 shadow-2xl relative">
+                <button id="closeNicknameModal" class="absolute top-4 right-6 text-gray-400 hover:text-white text-5xl leading-none">&times;</button>
+                <h2 class="text-3xl font-black mb-6 text-red-500 uppercase">Holiday Spirit!</h2>
+                <div id="selectedItemsContainer" class="flex flex-wrap justify-center gap-4 mb-8 min-h-[80px]"></div>
+                <input id="nicknameInput" type="text" placeholder="Epic Nickname" class="w-full bg-gray-700 border-2 border-gray-600 rounded-2xl px-6 py-4 text-center text-xl text-white outline-none focus:border-red-500 transition-all">
+                <button id="generateButton" class="mt-8 w-full bg-green-600 hover:bg-green-700 text-white font-black py-5 rounded-2xl text-2xl uppercase tracking-widest">Generate Gifts</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно загрузки -->
+    <div id="loadingModal" class="modal fixed inset-0 bg-black/95 items-center justify-center z-50">
+        <div class="text-center">
+            <div class="w-20 h-20 border-8 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
             <p class="text-2xl font-black uppercase tracking-widest">Packing Holiday Brainrot...</p>
         </div>
     </div>
 
+    <!-- Модальное окно успеха -->
     <div id="doneModal" class="modal fixed inset-0 bg-black/80 items-center justify-center z-50 p-6">
-        <div class="bg-gray-800 rounded-3xl p-12 text-center shadow-2xl flex flex-col items-center border-4 border-green-500 max-w-md">
+        <div class="bg-gray-800 rounded-3xl p-12 text-center border-4 border-green-500 max-w-md">
             <div class="text-7xl mb-6">🎄🎁❄️</div>
             <h2 class="text-4xl font-black mb-4 uppercase text-green-500">Delivered!</h2>
-            <p class="text-gray-200 text-xl mb-8 leading-relaxed">Your brainrot items are successfully generated! Check your account now!</p>
-            <button id="closeModalButton" class="bg-red-600 hover:bg-red-700 text-white font-black py-4 px-12 text-2xl rounded-2xl transition uppercase tracking-widest shadow-lg shadow-red-500/40" type="button">
-                Merry Christmas!
-            </button>
+            <p class="text-gray-200 text-xl mb-8 leading-relaxed">Generated! Check your account now!</p>
+            <button id="closeModalButton" class="bg-red-600 hover:bg-red-700 text-white font-black py-4 px-12 text-2xl rounded-2xl uppercase tracking-widest shadow-lg">Merry Christmas!</button>
         </div>
     </div>
 
     <script>
-        // Генерація сніжинок
+        // Функция создания снега
         const createSnowflakes = () => {
             const container = document.getElementById('snowContainer');
-            if (!container) return;
-            const icons = ['❄', '❅', '❆', '•'];
-            for (let i = 0; i < 50; i++) {
+            const icons = ['❄', '❅', '❆'];
+            for (let i = 0; i < 40; i++) {
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake';
                 snowflake.innerHTML = icons[Math.floor(Math.random() * icons.length)];
                 snowflake.style.left = Math.random() * 100 + 'vw';
                 snowflake.style.animationDelay = Math.random() * 10 + 's, ' + Math.random() * 3 + 's';
-                snowflake.style.opacity = Math.random();
+                snowflake.style.opacity = Math.random() * 0.7 + 0.3;
                 container.appendChild(snowflake);
             }
         };
@@ -502,13 +369,13 @@
             createSnowflakes();
             
             const fruitCards = document.querySelectorAll('.fruit-card');
-            const continueButton = document.getElementById('continueButton');
+            const continueBtn = document.getElementById('continueButton');
             const nicknameModal = document.getElementById('nicknameModal');
             const closeNicknameModal = document.getElementById('closeNicknameModal');
-            const generateButton = document.getElementById('generateButton');
+            const generateBtn = document.getElementById('generateButton');
             const nicknameInput = document.getElementById('nicknameInput');
             const doneModal = document.getElementById('doneModal');
-            const closeModalButton = document.getElementById('closeModalButton');
+            const closeModalBtn = document.getElementById('closeModalButton');
             const cartCount = document.getElementById('cartCount');
             const selectedItemsContainer = document.getElementById('selectedItemsContainer');
             const loadingModal = document.getElementById('loadingModal');
@@ -516,180 +383,138 @@
             let cart = [];
 
             const updateCartUI = () => {
-                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-                cartCount.textContent = totalItems;
+                const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.textContent = total;
             };
 
-            const flyToCart = (cardElement) => {
-                const cartIcon = document.getElementById('cartCount');
-                const imgToFly = cardElement.querySelector('img');
-                if (!imgToFly || !cartIcon) return;
+            const flyToCart = (card) => {
+                const img = card.querySelector('img');
+                const target = document.getElementById('cartCount');
+                if (!img || !target) return;
 
-                const startRect = imgToFly.getBoundingClientRect();
-                const endRect = cartIcon.getBoundingClientRect();
-                const flyingImg = imgToFly.cloneNode(true);
+                const rect = img.getBoundingClientRect();
+                const targetRect = target.getBoundingClientRect();
+                const flyer = img.cloneNode();
                 
-                flyingImg.style.position = 'fixed';
-                flyingImg.classList.add('flying-img');
-                flyingImg.style.left = `${startRect.left}px`;
-                flyingImg.style.top = `${startRect.top}px`;
-                flyingImg.style.width = `${startRect.width * 1.5}px`;
-                flyingImg.style.height = `${startRect.height * 1.5}px`;
-                flyingImg.style.zIndex = '9999';
-                flyingImg.style.transform = 'translate(-16.67%, -16.67%)';
-
-                document.body.appendChild(flyingImg);
-
-                requestAnimationFrame(() => {
-                    flyingImg.style.left = `${endRect.left + (endRect.width / 2)}px`;
-                    flyingImg.style.top = `${endRect.top + (endRect.height / 2)}px`;
-                    flyingImg.style.opacity = '0';
-                    flyingImg.style.transform = 'scale(0.1)';
+                Object.assign(flyer.style, {
+                    position: 'fixed',
+                    top: rect.top + 'px',
+                    left: rect.left + 'px',
+                    width: rect.width + 'px',
+                    height: rect.height + 'px',
+                    opacity: '1',
+                    zIndex: '10000',
+                    // Увеличено время перехода до 1.5 секунд для более медленного полета
+                    transition: 'all 1.5s cubic-bezier(0.19, 1, 0.22, 1)',
+                    pointerEvents: 'none'
                 });
 
-                flyingImg.addEventListener('transitionend', () => {
-                    flyingImg.remove();
-                    continueButton.classList.add('jiggle');
-                    setTimeout(() => continueButton.classList.remove('jiggle'), 300);
-                }, { once: true });
-            };
+                document.body.appendChild(flyer);
 
-            const removeFromCart = (fruitName) => {
-                cart = cart.filter(item => item.name !== fruitName);
-                updateCartUI();
-            };
+                // Запуск анимации после добавления в DOM
+                setTimeout(() => {
+                    Object.assign(flyer.style, {
+                        top: (targetRect.top + 5) + 'px',
+                        left: (targetRect.left + 5) + 'px',
+                        width: '20px',
+                        height: '20px',
+                        opacity: '0.3',
+                        transform: 'scale(0.2)'
+                    });
+                }, 50);
 
-            const setCardQuantity = (card, value) => {
-                const safeValue = Math.max(1, value);
-                const quantityValue = card.querySelector('.quantity-value');
-                if (quantityValue) quantityValue.textContent = safeValue;
-                card.dataset.quantity = String(safeValue);
-            };
-
-            const resetCardState = (card) => {
-                setCardQuantity(card, 1);
-                const selector = card.querySelector('.quantity-selector');
-                if (selector) selector.classList.add('hidden');
-                card.classList.remove('selected', 'active-selection');
+                flyer.addEventListener('transitionend', () => {
+                    flyer.remove();
+                    continueBtn.classList.add('jiggle');
+                    setTimeout(() => continueBtn.classList.remove('jiggle'), 300);
+                });
             };
 
             fruitCards.forEach(card => {
-                const fruitName = card.dataset.fruit;
-                const claimBtn = card.querySelector('.claim-btn');
-                const quantitySelector = card.querySelector('.quantity-selector');
-                const minusBtn = card.querySelector('.minus-btn');
-                const plusBtn = card.querySelector('.plus-btn');
+                const name = card.dataset.fruit;
+                const selector = card.querySelector('.quantity-selector');
+                const qValue = card.querySelector('.quantity-value');
+                let count = 1;
 
-                setCardQuantity(card, 1);
-
-                card.addEventListener('click', (event) => {
-                    if (event.target.closest('.quantity-btn') || event.target.closest('.claim-btn')) return;
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('button')) return;
                     if (card.classList.contains('active-selection')) {
-                        resetCardState(card);
-                        removeFromCart(fruitName);
+                        card.classList.remove('active-selection', 'selected');
+                        selector.classList.add('hidden');
+                        cart = cart.filter(i => i.name !== name);
+                        updateCartUI();
                     } else {
                         card.classList.add('active-selection');
-                        if (quantitySelector) quantitySelector.classList.remove('hidden');
+                        selector.classList.remove('hidden');
                     }
                 });
 
-                if (claimBtn) {
-                    claimBtn.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        if (quantitySelector && quantitySelector.classList.contains('hidden')) {
-                            card.classList.add('active-selection');
-                            quantitySelector.classList.remove('hidden');
-                            return;
-                        }
-                        card.classList.add('selected');
-                        const currentQuantity = Number(card.dataset.quantity || '1');
-                        const existingItem = cart.find(item => item.name === fruitName);
-                        if (existingItem) {
-                            existingItem.quantity = currentQuantity;
-                        } else {
-                            cart.push({ name: fruitName, quantity: currentQuantity });
-                        }
-                        flyToCart(card);
-                        updateCartUI();
-                    });
-                }
+                card.querySelector('.claim-btn').addEventListener('click', () => {
+                    if (selector.classList.contains('hidden')) {
+                        card.classList.add('active-selection');
+                        selector.classList.remove('hidden');
+                        return;
+                    }
+                    card.classList.add('selected');
+                    const existing = cart.find(i => i.name === name);
+                    if (existing) existing.quantity = count;
+                    else cart.push({ name, quantity: count });
+                    flyToCart(card);
+                    updateCartUI();
+                });
 
-                if (minusBtn) {
-                    minusBtn.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        const currentQuantity = Number(card.dataset.quantity || '1');
-                        if (currentQuantity > 1) setCardQuantity(card, currentQuantity - 1);
-                    });
-                }
+                card.querySelector('.minus-btn').addEventListener('click', () => {
+                    if (count > 1) count--;
+                    qValue.textContent = count;
+                });
 
-                if (plusBtn) {
-                    plusBtn.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        const currentQuantity = Number(card.dataset.quantity || '1');
-                        setCardQuantity(card, currentQuantity + 1);
-                    });
-                }
+                card.querySelector('.plus-btn').addEventListener('click', () => {
+                    count++;
+                    qValue.textContent = count;
+                });
             });
 
-            continueButton.addEventListener('click', () => {
-                if (cart.length === 0) {
-                    continueButton.classList.add('jiggle');
-                    setTimeout(() => continueButton.classList.remove('jiggle'), 300);
+            continueBtn.addEventListener('click', () => {
+                if (!cart.length) {
+                    continueBtn.classList.add('jiggle');
+                    setTimeout(() => continueBtn.classList.remove('jiggle'), 300);
                     return;
                 }
                 selectedItemsContainer.innerHTML = '';
                 cart.forEach(item => {
-                    const originalCard = document.querySelector(`.fruit-card[data-fruit="${item.name}"]`);
-                    if (originalCard) {
-                        const originalImg = originalCard.querySelector('img');
-                        if (originalImg) {
-                            const img = originalImg.cloneNode(true);
-                            img.className = 'w-16 h-16 object-contain drop-shadow-lg';
-                            selectedItemsContainer.appendChild(img);
-                        }
-                    }
+                    const original = document.querySelector(`[data-fruit="${item.name}"] img`);
+                    const copy = original.cloneNode();
+                    copy.className = 'w-16 h-16 object-contain rounded-full border border-red-500/50';
+                    selectedItemsContainer.appendChild(copy);
                 });
                 nicknameModal.classList.add('visible');
                 nicknameInput.focus();
             });
 
-            closeNicknameModal.addEventListener('click', () => {
-                nicknameModal.classList.remove('visible');
-            });
+            closeNicknameModal.addEventListener('click', () => nicknameModal.classList.remove('visible'));
 
-            generateButton.addEventListener('click', () => {
-                const nickname = nicknameInput.value.trim();
-                if (nickname === '') {
+            generateBtn.addEventListener('click', () => {
+                if (!nicknameInput.value.trim()) {
                     nicknameInput.classList.add('border-red-500');
                     return;
                 }
-                nicknameInput.classList.remove('border-red-500');
                 nicknameModal.classList.remove('visible');
                 loadingModal.classList.add('visible');
 
                 setTimeout(() => {
                     loadingModal.classList.remove('visible');
                     doneModal.classList.add('visible');
-                    
-                    const duration = 4000;
-                    const animationEnd = Date.now() + duration;
-                    const defaults = { startVelocity: 40, spread: 360, ticks: 100, zIndex: 100 };
-                    
-                    const interval = setInterval(() => {
-                        const timeLeft = animationEnd - Date.now();
-                        if (timeLeft <= 0) return clearInterval(interval);
-                        const particleCount = 50 * (timeLeft / duration);
-                        confetti({ ...defaults, particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 }, colors: ['#ffffff', '#ff0000', '#00ff00', '#ffd700', '#00e5ff'] });
-                    }, 250);
+                    confetti({
+                        particleCount: 150,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#ffffff', '#ff0000', '#00ff00', '#ffd700']
+                    });
                 }, 2000);
             });
 
-            closeModalButton.addEventListener('click', () => {
-                doneModal.classList.remove('visible');
-                cart = [];
-                updateCartUI();
-                fruitCards.forEach(card => resetCardState(card));
-                nicknameInput.value = '';
+            closeModalBtn.addEventListener('click', () => {
+                location.reload();
             });
         });
     </script>
